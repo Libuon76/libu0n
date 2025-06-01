@@ -64,6 +64,24 @@
             border-bottom-width: 0px;
             border-right-width: 0px;
         }
+        /* ルールボタンのスタイル (新しい色) */
+        .btn-rules {
+            background-color: #f59e0b; /* amber-500 */
+            border-color: #b45309; /* amber-700 */
+        }
+        .btn-rules:hover {
+            transform: translateY(2px) translateX(2px);
+            box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.3);
+            border-bottom-width: 4px;
+            border-right-width: 4px;
+        }
+        .btn-rules:active {
+            transform: translateY(4px) translateX(4px);
+            box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
+            border-bottom-width: 0px;
+            border-right-width: 0px;
+        }
+
         /* 入力フィールドのフォーカスエフェクト */
         input:focus, select:focus {
             box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* blue-500 with opacity */
@@ -100,7 +118,7 @@
             #mainTopPageTitle {
                 font-size: 4.5rem; /* PC版ではタイトルを少し大きく */
             }
-            #settingsPageTitle, #gamePageTitle, #resultsPageTitle {
+            #settingsPageTitle, #gamePageTitle, #resultsPageTitle, #rulesPageTitle { /* rulesPageTitleを追加 */
                 font-size: 3rem; /* PC版ではページタイトルを少し大きく */
             }
             #message {
@@ -172,8 +190,12 @@
         </div>
 
         <button id="goToSettingsButton"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 btn-base btn-primary">
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 btn-base btn-primary mb-4">
             ゲームを始める
+        </button>
+        <button id="goToRulesButton"
+                class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-4 px-6 btn-base btn-rules">
+            ルール説明
         </button>
     </div>
 
@@ -303,6 +325,26 @@
         </button>
     </div>
 
+    <div id="rules-page" class="hidden-page bg-white p-8 rounded-3xl shadow-2xl w-full text-center game-container">
+        <h1 id="rulesPageTitle" class="text-4xl font-extrabold text-gray-800 mb-6 text-shadow-custom">ルール説明</h1>
+        <div id="rulesContent" class="text-left text-lg text-gray-700 mb-8 leading-relaxed">
+            <p class="mb-4">このゲームは、隠された数字を当てるシンプルなゲームです。</p>
+            <ul class="list-disc list-inside mb-4">
+                <li class="mb-2">まず、1から設定された範囲（例: 100）までの数字の中から、秘密の数字がランダムに選ばれます。</li>
+                <li class="mb-2">プレイヤーは、その秘密の数字を予想して入力します。</li>
+                <li class="mb-2">予想が秘密の数字よりも「大きい」か「小さい」かがヒントとして表示されます。</li>
+                <li class="mb-2">ヒントを参考にしながら、秘密の数字を当てましょう！</li>
+                <li class="mb-2">試行回数に制限がある場合、その回数以内に当てられなければ引き分けとなります。</li>
+                <li class="mb-2">複数回戦を設定している場合、各回戦の勝敗に応じて総合スコアが計算されます。</li>
+            </ul>
+            <p>さあ、最高の数字当てマスターを目指しましょう！</p>
+        </div>
+        <button id="backToMainButton"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 btn-base btn-primary">
+            戻る
+        </button>
+    </div>
+
     <script>
         // ゲームのグローバル状態
         let playMode = 'multiplayer'; // 'multiplayer', 'cpu', 'singleplayer'
@@ -333,6 +375,7 @@
                 gameTitle: "数字当てゲーム",
                 welcomeMessage: "シンプルだけど奥深い、数字当てゲームへようこそ！",
                 startGameButton: "ゲームを始める",
+                rulesButton: "ルール説明", // New
                 settingsTitle: "ゲーム設定",
                 playModeLabel: "プレイモード:",
                 multiplayerMode: "みんなでプレイ",
@@ -384,12 +427,27 @@
                 playAgainButton: "もう一度プレイ",
                 volumeSettingsLabel: "音量設定:",
                 languageSettingsLabel: "言語設定:",
-                bgmToggleLabel: "BGMを再生", // New BGM label
+                bgmToggleLabel: "BGMを再生",
+                rulesPageTitle: "ルール説明", // New
+                rulesContent: `
+                    <p class="mb-4">このゲームは、隠された数字を当てるシンプルなゲームです。</p>
+                    <ul class="list-disc list-inside mb-4">
+                        <li class="mb-2">まず、1から設定された範囲（例: 100）までの数字の中から、秘密の数字がランダムに選ばれます。</li>
+                        <li class="mb-2">プレイヤーは、その秘密の数字を予想して入力します。</li>
+                        <li class="mb-2">予想が秘密の数字よりも「大きい」か「小さい」かがヒントとして表示されます。</li>
+                        <li class="mb-2">ヒントを参考にしながら、秘密の数字を当てましょう！</li>
+                        <li class="mb-2">試行回数に制限がある場合、その回数以内に当てられなければ引き分けとなります。</li>
+                        <li class="mb-2">複数回戦を設定している場合、各回戦の勝敗に応じて総合スコアが計算されます。</li>
+                    </ul>
+                    <p>さあ、最高の数字当てマスターを目指しましょう！</p>
+                `, // New
+                backButton: "戻る", // New
             },
             en: {
                 gameTitle: "Guess the Number Game",
                 welcomeMessage: "Welcome to the simple yet profound Guess the Number Game!",
                 startGameButton: "Start Game",
+                rulesButton: "Rules", // New
                 settingsTitle: "Game Settings",
                 playModeLabel: "Play Mode:",
                 multiplayerMode: "Multiplayer",
@@ -440,7 +498,21 @@
                 playAgainButton: "Play Again",
                 volumeSettingsLabel: "Volume Settings:",
                 languageSettingsLabel: "Language Settings:",
-                bgmToggleLabel: "Play BGM", // New BGM label
+                bgmToggleLabel: "Play BGM",
+                rulesPageTitle: "Rules Explanation", // New
+                rulesContent: `
+                    <p class="mb-4">This is a simple game where you guess a hidden number.</p>
+                    <ul class="list-disc list-inside mb-4">
+                        <li class="mb-2">First, a secret number is randomly chosen from 1 to the set range (e.g., 100).</li>
+                        <li class="mb-2">Players guess the secret number and enter their guess.</li>
+                        <li class="mb-2">A hint will be displayed indicating if your guess is "Too High" or "Too Low".</li>
+                        <li class="mb-2">Use the hints to find the secret number!</li>
+                        <li class="mb-2">If there's an attempt limit, failing to guess within that limit results in a draw.</li>
+                        <li class="mb-2">If multiple rounds are set, overall scores are calculated based on wins and losses in each round.</li>
+                    </ul>
+                    <p>Aim to become the ultimate number guessing master!</p>
+                `, // New
+                backButton: "Back", // New
             }
         };
 
@@ -459,6 +531,7 @@
         const mainTopPageTitle = document.getElementById('mainTopPageTitle');
         const mainTopPageMessage = document.getElementById('mainTopPageMessage');
         const goToSettingsButton = document.getElementById('goToSettingsButton');
+        const goToRulesButton = document.getElementById('goToRulesButton'); // New
         const languageSettingsLabelMain = document.getElementById('languageSettingsLabelMain'); // トップページ用の言語設定ラベル
         const languageSelectMain = document.getElementById('languageSelectMain'); // トップページ用の言語選択
 
@@ -515,9 +588,16 @@
         const overallWinnerDisplay = document.getElementById('overallWinner');
         const playAgainButton = document.getElementById('playAgainButton');
 
+        // ルール説明ページ要素
+        const rulesPage = document.getElementById('rules-page'); // New
+        const rulesPageTitle = document.getElementById('rulesPageTitle'); // New
+        const rulesContent = document.getElementById('rulesContent'); // New
+        const backToMainButton = document.getElementById('backToMainButton'); // New
+
+
         // --- ページ表示制御関数 ---
         function showPage(pageId) {
-            const pages = [mainTopPage, startPage, gamePage, resultsPage];
+            const pages = [mainTopPage, startPage, gamePage, resultsPage, rulesPage]; // rulesPageを追加
             pages.forEach(page => {
                 if (page.id === pageId) {
                     page.classList.remove('hidden-page');
@@ -638,7 +718,6 @@
 
         function startBGM() {
             if (!isBGMPlaying) {
-                // Tone.start()がユーザー操作で呼ばれた後にBGMを開始
                 Tone.Transport.start(); // Tone.Transportを開始
                 bgmSequence.start(0); // 最初から再生
                 isBGMPlaying = true;
@@ -676,6 +755,7 @@
             mainTopPageTitle.textContent = lang.gameTitle;
             mainTopPageMessage.textContent = lang.welcomeMessage;
             goToSettingsButton.textContent = lang.startGameButton;
+            goToRulesButton.textContent = lang.rulesButton; // New
             languageSettingsLabelMain.textContent = lang.languageSettingsLabel; // トップページの言語設定ラベル
 
             // ゲーム設定ページ
@@ -711,6 +791,11 @@
             // 結果発表ページ
             resultsPageTitle.textContent = lang.resultsTitle;
             playAgainButton.textContent = lang.playAgainButton;
+
+            // ルール説明ページ
+            rulesPageTitle.textContent = lang.rulesPageTitle; // New
+            rulesContent.innerHTML = lang.rulesContent; // New
+            backToMainButton.textContent = lang.backButton; // New
 
             // 動的に更新されるテキスト (例: roundDisplay, currentPlayerDisplay, rangeInfo, messageDisplay)
             roundDisplay.textContent = lang.roundDisplayPrefix + currentRound + lang.roundDisplaySuffix;
@@ -876,6 +961,20 @@
             }
             showPage('start-page');
             // ここではBGMを再生しない
+        });
+
+        // 「ルール説明」ボタンクリック時の処理 (トップページからルール説明ページへ)
+        goToRulesButton.addEventListener('click', async () => { // New
+            if (Tone.context.state !== 'running') {
+                await Tone.start();
+            }
+            showPage('rules-page');
+            // ルール説明ページではBGMを停止するかどうかは要件によるが、ここではそのままにする
+        });
+
+        // 「戻る」ボタンクリック時の処理 (ルール説明ページからトップページへ)
+        backToMainButton.addEventListener('click', () => { // New
+            showPage('main-top-page');
         });
 
         // プレイモードラジオボタンの変更イベント
