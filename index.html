@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
     
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="https://placehold.co/180x180/3b82f6/ffffff?text=APP">
+    <link rel="apple-touch-icon" href="https://placehold.co/180x180/10b981/ffffff?text=GAME">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="数字当て">
@@ -22,6 +22,11 @@
             image-rendering: pixelated; /* 画像のスケーリング時にピクセル感を維持 */
             background-color: #1a202c; /* 暗い背景色 */
             color: #e2e8f0; /* 薄いグレーのテキスト */
+            min-height: 100vh; /* 画面いっぱいに広げる */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem; /* 全体のパディング */
         }
         /* 日本語フォントを適用するクラス */
         body.font-japanese-pixel {
@@ -116,8 +121,10 @@
             border: 10px solid #4a5568; /* 濃いグレーのボーダー */
             border-radius: 0; /* 角をなくす */
             box-shadow: 15px 15px 0px rgba(0, 0, 0, 0.5); /* 強い影 */
-            max-width: 600px; /* スマートフォン向け */
+            width: 100%; /* スマホでは幅いっぱいに */
+            max-width: 600px; /* PCでは最大幅を設定 */
             padding: 2rem; /* パディングを調整 */
+            box-sizing: border-box; /* パディングとボーダーを幅に含める */
         }
 
         /* PC (md: breakpoint) 以上の画面サイズで最大幅を広げる */
@@ -151,13 +158,18 @@
             margin-top: 1rem;
             margin-bottom: 1rem;
         }
-        /* プレイヤー名入力フィールドの調整 */
-        .player-name-input {
+        /* 入力フィールド全般のスタイル調整 */
+        input[type="text"],
+        input[type="number"],
+        select {
             border-radius: 0; /* 角をなくす */
-            border: 3px solid #4a5568; /* 濃いグレーのボーダー */
-            background-color: #1a202c; /* 暗い背景 */
-            color: #e2e8f0; /* 薄いグレーのテキスト */
+            border: 3px solid #10b981; /* エメラルドグリーンのボーダー */
+            background-color: #4a5568; /* 中間的なグレーの背景 */
+            color: #eab308; /* 黄色のテキスト */
+            padding: 0.75rem; /* p-3 (12px) or p-4 (16px) */
+            font-size: 1.125rem; /* text-lg (18px) */
         }
+
         /* ラジオボタンとチェックボックスのスタイルを調整 */
         .form-radio {
             -webkit-appearance: none;
@@ -189,13 +201,6 @@
             background: #1a202c; /* 中心は暗い色 */
             border-radius: 0; /* ドットも四角に */
             transform: translate(-50%, -50%);
-        }
-        /* セレクトボックスのスタイル */
-        select {
-            border-radius: 0;
-            border: 3px solid #4a5568;
-            background-color: #1a202c;
-            color: #e2e8f0;
         }
         /* 範囲スライダーのスタイル */
         input[type="range"] {
@@ -233,7 +238,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
+<body>
 
     <div id="main-top-page" class="p-8 w-full text-center game-container">
         <h1 id="mainTopPageTitle" class="text-5xl font-extrabold text-yellow-400 mb-8 animate-pulse text-shadow-custom">数字当てゲーム</h1>
@@ -283,11 +288,11 @@
             <label id="playerNameLabel" class="block text-gray-200 text-sm font-bold mb-2">プレイヤー名:</label>
             <div class="flex items-center mb-2">
                 <input type="text" class="player-name-input w-full p-3 border-2 border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 text-lg text-gray-200" value="プレイヤー1">
-                <button class="remove-player-btn ml-2 p-2 bg-red-600 text-white rounded-full text-sm font-bold">-</button>
+                <button class="remove-player-btn ml-2 p-2 bg-red-600 text-white rounded-none text-sm font-bold">-</button>
             </div>
             <div class="flex items-center mb-2">
                 <input type="text" class="player-name-input w-full p-3 border-2 border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 text-lg text-gray-200" value="プレイヤー2">
-                <button class="remove-player-btn ml-2 p-2 bg-red-600 text-white rounded-full text-sm font-bold">-</button>
+                <button class="remove-player-btn ml-2 p-2 bg-red-600 text-white rounded-none text-sm font-bold">-</button>
             </div>
         </div>
         <button id="addPlayerButton" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-none shadow-md transform transition duration-300 ease-in-out hover:scale-105 mb-6" data-lang-key="addPlayerButton">
@@ -402,45 +407,6 @@
     </div>
 
     <script>
-        // デバイス判定関数
-        function isMobileDevice() {
-            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-            // Android detection
-            if (/android/i.test(userAgent)) {
-                return true;
-            }
-            // iOS detection
-            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) { // !window.MSStream for older IE/Edge
-                return true;
-            }
-            // Other mobile devices
-            if (/Mobi|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)) {
-                return true;
-            }
-            return false;
-        }
-
-        // PCからのアクセスの場合、PC版へリダイレクト
-        if (!isMobileDevice()) {
-            // リダイレクト先のURLを適切に設定してください
-            window.location.href = 'https://libuon76.github.io/libu0n/'; 
-        }
-
-        // PWA: Service Worker Registration
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('service-worker.js')
-                    .then(registration => {
-                        console.log('ServiceWorker registered: ', registration);
-                    })
-                    .catch(registrationError => {
-                        console.log('ServiceWorker registration failed: ', registrationError);
-                    });
-            });
-        }
-    </script>
-    
-    <script>
         // ゲームのグローバル状態
         let playMode = 'multiplayer'; // 'multiplayer', 'cpu', 'singleplayer'
         let players = []; // プレイヤー名を格納する配列
@@ -536,6 +502,8 @@
                     <p>さあ、最高の数字当てマスターを目指しましょう！</p>
                 `, // New
                 backButton: "戻る", // New
+                nextRoundButtonText: "次のラウンドへ", // 新しいテキスト
+                goToResultsButton: "結果発表へ" // 新しいテキスト
             },
             en: {
                 gameTitle: "Guess the Number Game",
@@ -606,6 +574,8 @@
                     <p>Aim to become the ultimate number guessing master!</p>
                 `, // New
                 backButton: "Back", // New
+                nextRoundButtonText: "Next Round", // 新しいテキスト
+                goToResultsButton: "Go to Results" // 新しいテキスト
             }
         };
 
@@ -874,7 +844,7 @@
             gamePageTitle.textContent = lang.gameTitle;
             submitGuessButton.textContent = lang.submitGuessButton;
             guessInput.placeholder = lang.guessInputPlaceholder;
-            nextRoundButton.textContent = lang.nextRoundButton;
+            // nextRoundButton.textContent は endRound() で動的に設定されるため、ここでは更新しない
 
             // 結果発表ページ
             resultsPageTitle.textContent = lang.resultsTitle;
@@ -909,7 +879,7 @@
             input.placeholder = `${textStrings[currentLanguage].playerNameLabel.replace(':', '')}${document.querySelectorAll('.player-name-input').length + 1}`;
 
             const removeButton = document.createElement('button');
-            removeButton.classList.add('remove-player-btn', 'ml-2', 'p-2', 'bg-red-600', 'text-white', 'rounded-full', 'text-sm', 'font-bold');
+            removeButton.classList.add('remove-player-btn', 'ml-2', 'p-2', 'bg-red-600', 'text-white', 'rounded-none', 'text-sm', 'font-bold');
             removeButton.textContent = '-';
             removeButton.addEventListener('click', () => {
                 playerInputWrapper.remove();
@@ -1035,7 +1005,13 @@
 
             // もしCPUモードでCPUが最初のプレイヤーなら、CPUのターンを開始
             if (playMode === 'cpu' && players[currentPlayerIndex].name === 'CPU') {
-                setTimeout(cpuTurn, 1000); // 少し遅延させてCPUの思考を表現
+                submitGuessButton.disabled = true; // CPUのターン中はボタンを無効化
+                guessInput.disabled = true; // CPUのターン中は入力フィールドを無効化
+                setTimeout(cpuTurn, 1500); // 少し遅延させてCPUの思考を表現
+            } else {
+                submitGuessButton.disabled = false; // 人間のターンではボタンを有効化
+                guessInput.disabled = false; // 人間のターンでは入力フィールドを有効化
+                guessInput.focus(); // 入力フィールドにフォーカス
             }
         }
 
@@ -1358,6 +1334,13 @@
             submitGuessButton.disabled = true; // 送信ボタンを無効化
             nextRoundButton.style.display = 'block'; // 次へボタンを表示
             currentPlayerDisplay.textContent = textStrings[currentLanguage].roundEnd;
+
+            // 次のラウンドへ進むか、結果発表へ進むかでボタンのテキストを変更
+            if (currentRound < totalRounds) {
+                nextRoundButton.textContent = textStrings[currentLanguage].nextRoundButtonText;
+            } else {
+                nextRoundButton.textContent = textStrings[currentLanguage].goToResultsButton;
+            }
         }
 
         // 結果発表ページを表示する関数
@@ -1415,6 +1398,19 @@
                     overallWinnerDisplay.classList.add('text-gray-400');
                 }
             }
+        }
+
+        // PWA: Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('ServiceWorker registration failed: ', registrationError);
+                    });
+            });
         }
 
         // ページロード時にゲームを初期化してトップページを表示
